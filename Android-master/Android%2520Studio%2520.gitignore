@@ -1,0 +1,46 @@
+# Built application files
+/*/build/
+
+# Crashlytics configuations
+com_crashlytics_export_strings.xml
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Gradle generated files
+.gradle/
+
+# Signing files
+.signing/
+
+# User-specific configurations
+demo/.idea/libraries/
+demo/.idea/workspace.xml
+demo/.idea/tasks.xml
+demo/.idea/.name
+demo/.idea/compiler.xml
+demo/.idea/copyright/profiles_settings.xml
+demo/.idea/encodings.xml
+demo/.idea/misc.xml
+demo/.idea/modules.xml
+demo/.idea/scopes/scope_settings.xml
+demo/.idea/vcs.xml
+*.iml
+
+demo/.gradle/2.14.1/taskArtifacts/cache.properties.lock
+demo/.gradle/2.14.1/taskArtifacts/fileHashes.bin
+demo/.gradle/2.14.1/taskArtifacts/fileSnapshots.bin
+demo/.gradle/2.14.1/taskArtifacts/fileSnapshotsToTreeSnapshotsIndex.bin
+demo/.gradle/2.14.1/taskArtifacts/taskArtifacts.bin
+demo/.gradle/2.14.1/tasks/_app_compileDebugJavaWithJavac/localClassSetAnalysis/localClassSetAnalysis.lock
+demo/.gradle/2.14.1/tasks/_app_compileDebugJavaWithJavac/localJarClasspathSnapshot/localJarClasspathSnapshot.lock
+demo/.idea/workspace.xml
+
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
