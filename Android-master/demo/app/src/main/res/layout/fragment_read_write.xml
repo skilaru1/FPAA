@@ -18,7 +18,8 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
+            android:digits="0123456789ABCDEFX"
+            android:inputType="textCapCharacters"
             android:ems="10"
             android:id="@+id/address_to_write"
             android:layout_gravity="center_horizontal"
@@ -27,6 +28,8 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:digits="0123456789ABCDEFX"
+            android:inputType="textCapCharacters"
             android:ems="10"
             android:id="@+id/data_to_write"
             android:layout_gravity="center_horizontal"
@@ -48,7 +51,8 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
+            android:digits="0123456789ABCDEFX"
+            android:inputType="textCapCharacters"
             android:ems="10"
             android:id="@+id/address_to_read"
             android:layout_gravity="center_horizontal"
@@ -57,7 +61,8 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
+            android:digits="0123456789ABCDEFX"
+            android:inputType="textCapCharacters"
             android:ems="10"
             android:id="@+id/amount_to_read"
             android:layout_gravity="center_horizontal"

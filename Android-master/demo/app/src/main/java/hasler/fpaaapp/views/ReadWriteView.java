@@ -71,7 +71,7 @@ public class ReadWriteView extends DriverFragment {
                     Toast.makeText(parentContext, "Invalid address: " + addressString, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (address < 0x0000 || address > 0x10000) {
+                if (address < 0x4100 || address > 0xFFFF) {
                     Toast.makeText(parentContext, "Address " + addressString + " is out of range", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -79,12 +79,12 @@ public class ReadWriteView extends DriverFragment {
                 String amountString = amountToRead.getText().toString();
                 int amount;
                 try {
-                    amount = Integer.parseInt(amountString, 10);
+                    amount = Integer.parseInt(amountString, 16);
                 } catch (NumberFormatException e) {
                     Toast.makeText(parentContext, "Invalid length: " + amountString, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (amount < 0 || amount > 100) {
+                if (amount < 0x0000 || amount > 0x0100) {
                     Toast.makeText(parentContext, "Cannot read " + amountString + " words", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -121,7 +121,7 @@ public class ReadWriteView extends DriverFragment {
                     Toast.makeText(parentContext, "Invalid address: " + addressString, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (address < 0x0000 || address > 0x10000) {
+                if (address < 0x4100 || address > 0xFFFF) {
                     Toast.makeText(parentContext, "Address " + addressString + " is out of range", Toast.LENGTH_SHORT).show();
                     return;
                 }
