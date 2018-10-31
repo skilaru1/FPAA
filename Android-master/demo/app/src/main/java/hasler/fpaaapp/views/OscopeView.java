@@ -308,13 +308,13 @@ public class OscopeView extends DriverFragment {
 
                     @TargetApi(Build.VERSION_CODES.KITKAT)
                     @Override
-                    public Boolean doInBackground(Void... params) {
+                    public String doInBackground(Void... params) {
                         try {
                             //check for url input
                             if (url.equals("Url not found!!!")) {
                                 //SAI
                                 makeToastMessage(url);
-                                return false;
+                                return url;
                             }
 
                             //download the zip file into path(downloads) and store it in file
@@ -328,7 +328,7 @@ public class OscopeView extends DriverFragment {
                             }
                             if (!download(dFile)) {
                                 Utils.debugLine("file not downloaded", true);
-                                return false;
+                                return "file not downloaded";
                             }
                             //map representing the zip file, keys are file names, byte[] are contents
                             Map<String, byte[]> zipped_files = Utils.getZipContents(dFile.getAbsolutePath());
@@ -337,13 +337,13 @@ public class OscopeView extends DriverFragment {
                             //check for driver connection
                             if (!checkConnection()) {
                                 Utils.debugLine("not connected to driver", true);
-                                return false;
+                                return "not connected to driver";
                             }
                             Utils.debugLine("checked Connection", true);
                             //check for successful download and map
                             if (zipped_files == null) {
                                 Utils.debugLine("null zipped_files", true);
-                                return false;
+                                return "null zipped_files";
                             }
                             Utils.debugLine("zip file contents", true);
                             for (String key : zipped_files.keySet()) {
@@ -353,13 +353,13 @@ public class OscopeView extends DriverFragment {
                             Utils.debugLine("\nstarted compile and program", true);
                             //begin programming FPAA
                             if (!compileAndProgram(zipped_files, "tunnel_revtun_SWC_CAB.elf", 10 * 1000))
-                                return false;
+                                return "tunnel_revtun_SWC_CAB.elf not properly programmed";
                             updateProgressBar(20);
                             Utils.debugLine("first compile and program successful", true);
-                            if (!writeAscii(zipped_files, 0x7000, "switch_info")) return false;
+                            if (!writeAscii(zipped_files, 0x7000, "switch_info")) return "first writeAscii failed";
                             Utils.debugLine("first writeascii successful", true);
                             if (!compileAndProgram(zipped_files, "switch_program.elf", 70 * 1000))
-                                return false;
+                                return "switch_program.elf not properly programmed";
                             updateProgressBar(30);
                             Utils.debugLine("started target program", true);
                             //initializer targetProgram class, which gets target list from the zip file
@@ -372,7 +372,7 @@ public class OscopeView extends DriverFragment {
                             } catch (InterruptedException e) {
                                 makeToastMessage("InterruptedException");
                                 Utils.debugLine(e.getMessage(), true);
-                                return false;
+                                return "InterruptedException";
                             }
                             //get the lines of the text file targetList
                             tp.TARGETLIST(dFile);
@@ -381,7 +381,7 @@ public class OscopeView extends DriverFragment {
                                 Utils.debugLine(instruct, true);
                             }
                             //program the FPAA based on the lines of targetList
-                            if (!TProgram(tp.targetListInstruct, tp.zipped_files)) return false;
+                            if (!TProgram(tp.targetListInstruct, tp.zipped_files)) return "Failed to program the FPAA based on the lines of targetList";
 //                        for(int i = 0; i < 13; i++){
 //                            makeToastMessage(tp.entryNames[i]);
 //                            try{
@@ -394,10 +394,10 @@ public class OscopeView extends DriverFragment {
                             updateProgressBar(70);
 
                             //finish programming the FPAA
-                            if (!writeAscii(zipped_files, 0x4300, "input_vector")) return false;
-                            if (!writeAscii(zipped_files, 0x4200, "output_info")) return false;
+                            if (!writeAscii(zipped_files, 0x4300, "input_vector")) return "input_vector writeAscii failed";
+                            if (!writeAscii(zipped_files, 0x4200, "output_info")) return "output_info writeAscii failed";
                             if (!compileAndProgram(zipped_files, "voltage_meas.elf", 70 * 1000))
-                                return false;
+                                return "voltage_meas.elf not programmed";
                             updateProgressBar(100);
 
                             // plot the switches
@@ -415,19 +415,15 @@ public class OscopeView extends DriverFragment {
 //                        }
 //                        //format the graph for program design
 //                        formatGraphPD(graph, graphTitle, title);
-                            return true;
+                            return "Success";
                         } catch (ReadTimeOutException e) {
-                            return true;
+                            return "ReadTimeOutException";
                         }
                     }
 
                     @Override
-                    protected void onPostExecute(Boolean result) {
-                        //super.onPostExecute(result);
-
-                        if (!result) {
-                            makeToastMessage("Error while trying to program the design");
-                        }
+                    protected void onPostExecute(String result) {
+                        makeToastMessage(result);
 
                         progressBar.setProgress(100);
                         getDataButton.setEnabled(true);
@@ -459,7 +455,7 @@ public class OscopeView extends DriverFragment {
 
                     @TargetApi(Build.VERSION_CODES.KITKAT)
                     @Override
-                    public Boolean doInBackground(Void... params) {
+                    public String doInBackground(Void... params) {
                         try {
                             Utils.debugLine("\n \n \n \n \n \n Get Data (do in background)\n", false);
                             //Utils.debugLine("started getData",true);
@@ -467,21 +463,21 @@ public class OscopeView extends DriverFragment {
                             final String title = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf("."));
                             File file = new File(path, title.concat(".zip"));
                             makeToastMessage(title.concat(".zip"));
-                            if (!download(file)) return false;
+                            if (!download(file)) return "File not downloaded";
 
                             if (!checkConnection()) {
                                 Utils.debugLine("driver not connected", true);
-                                return false;
+                                return "driver not connected";
                             }
                             //Utils.debugLine("driver connected",true);
                             Map<String, byte[]> zipped_files = Utils.getZipContents(file.getAbsolutePath());
                             updateProgressBar(10);
 
-                            if (!writeAscii(zipped_files, 0x4300, "input_vector")) return false;
-                            if (!writeAscii(zipped_files, 0x4200, "output_info")) return false;
+                            if (!writeAscii(zipped_files, 0x4300, "input_vector")) return "input_vector writeAscii failed";
+                            if (!writeAscii(zipped_files, 0x4200, "output_info")) return "output_info writeAscii failed";
                             updateProgressBar(30);
 
-                            if (!driver.runWithoutData()) return false;
+                            if (!driver.runWithoutData()) return "driver not run without data";
                             updateProgressBar(50);
 
                             driver.sleep(40 * 1000);
@@ -493,7 +489,7 @@ public class OscopeView extends DriverFragment {
                             }
                             if (!compileAndProgram(zipped_files, "voltage_meas.elf", 20 * 1000)) {
                                 Utils.debugLine("couldn't compile and program voltage_meas.elf", true);
-                                return false;
+                                return "couldn't compile and program voltage_meas.elf";
                             }
                             //Utils.debugLine("compiled and programmed voltage_meas.elf",true);
                             long[] d = Utils.toInts(2, driver.readMem(0x6000, 1200));
@@ -530,19 +526,15 @@ public class OscopeView extends DriverFragment {
                                         new double[][]{Utils.linspace(1.0, n.length, l.length), n});
                             }
                             formatGraphGD(graph);
-                            return true;
+                            return "Success";
                         } catch (ReadTimeOutException e) {
-                            return true;
+                            return "ReadTimeOutException";
                         }
                     }
 
                     @Override
-                    protected void onPostExecute(Boolean result) {
-                        super.onPostExecute(result);
-
-                        if (result == null || !result) {
-                            makeToastMessage("Error while trying to program the design");
-                        }
+                    protected void onPostExecute(String result) {
+                        makeToastMessage(result);
 
                         progressBar.setProgress(100);
                         getDataButton.setEnabled(true);
@@ -579,8 +571,11 @@ public class OscopeView extends DriverFragment {
 
                     @TargetApi(Build.VERSION_CODES.KITKAT)
                     @Override
-                    public Boolean doInBackground(Void... params) {
+                    public String doInBackground(Void... params) {
                         File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                        if (url.equals("Url not found!!!")) {
+                            return url;
+                        }
                         String title = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf("."));
                         File downloadedZip = new File(path, title.concat(".zip"));
                         makeToastMessage(title.concat(".zip"));
@@ -590,13 +585,13 @@ public class OscopeView extends DriverFragment {
                         if (!download(downloadedZip)) {
                             Utils.debugLine("download = false", true);
                             makeToastMessage("download = false");
-                            return null;
+                            return "Zip file not downloaded";
                         }
                         downloadedZip.deleteOnExit();
 
                         if (!checkConnection()) {
                             Utils.debugLine("driver not connected", true);
-                            return null;
+                            return "driver not connected";
                         }
                         //Utils.debugLine("driver connected", true);
                         Map<String, byte[]> zipped_files = Utils.getZipContents(downloadedZip.getAbsolutePath());
@@ -629,13 +624,13 @@ public class OscopeView extends DriverFragment {
                             if(downloadedZip.exists()){Utils.debugLine("file.delete not working", true);}
                             if (!download(downloadedZip)) {
                                 Utils.debugLine("download = false", true);
-                                return null;
+                                return "Zip file not downloaded";
                             }
                             downloadedZip.deleteOnExit();
 
                             if (!checkConnection()) {
                                 Utils.debugLine("driver not connected", true);
-                                return null;
+                                return "driver not connected";
                             }
                             //Utils.debugLine("driver connected", true);
                             zipped_files = Utils.getZipContents(downloadedZip.getAbsolutePath());
@@ -686,17 +681,17 @@ public class OscopeView extends DriverFragment {
                         //Utils.debugLine("alert.show finished",true);
                     if (!writeAscii(zipped_files, 0x4300, "input_vector")) {
                         Utils.debugLine("writeAscii(input_vector) = false",true);
-                        return null;
+                        return "writeAscii(input_vector) = false";
                     }
                     if (!writeAscii(zipped_files, 0x4200, "output_info")){
                         Utils.debugLine("writeAscii(output_info)",true);
-                        return null;
+                        return "writeAscii(output_info) = false";
                     }
                         updateProgressBar(30);
 
                     if (!driver.runWithoutData()){
                         Utils.debugLine("driver.runwithoutData() = false",true);
-                        return null;
+                        return "driver.runwithoutData() = false";
                     }
                         updateProgressBar(50);
 
@@ -709,7 +704,7 @@ public class OscopeView extends DriverFragment {
                         }
                     if (!compileAndProgram(zipped_files, "voltage_meas.elf", 20 * 1000)) {
                         Utils.debugLine("couldn't compile and program voltage_meas.elf", true);
-                        return null;
+                        return "couldn't compile and program voltage_meas.elf";
                     }
 
 
@@ -724,17 +719,13 @@ public class OscopeView extends DriverFragment {
                         makeTempWaveFile(zipped_files, selectedKey);
                         //Utils.debugLine("selectionPath created",true);
                         makeMediaFile();
-                        return true;
+                        return "Success";
                     }
 
                     @Override
-                    protected void onPostExecute(Boolean result) {
+                    protected void onPostExecute(String result) {
                         Utils.debugLine("PostExecute Start", true);
-                        super.onPostExecute(result);
-
-                        if (result == null || !result) {
-                            makeToastMessage("Error while trying to program the design");
-                        }
+                        makeToastMessage(result);
 
                         updateProgressBar(100);
                         programDesignButton.setEnabled(true);
@@ -769,7 +760,7 @@ public class OscopeView extends DriverFragment {
     /*-------------------------METHODS_CALLED_USING_MHANDLER----------------------------*/
     /*------------------(USUALLY_CALLS_METHODS_FROM_METHODS_SECTION_ABOVE)--------------*/
     /*----------------------------------------------------------------------------------*/
-    protected abstract class ThreadRunnable extends AsyncTask<Void, Void, Boolean> {
+    protected abstract class ThreadRunnable extends AsyncTask<Void, Void, String> {
 
         public void updateGraph(final String name[], final long[][]... data) {
             mHandler.post(new Runnable() {
