@@ -312,8 +312,9 @@ public class OscopeView extends DriverFragment {
                         try {
                             //check for url input
                             if (url.equals("Url not found!!!")) {
+                                //SAI
                                 makeToastMessage(url);
-                                return null;
+                                return false;
                             }
 
                             //download the zip file into path(downloads) and store it in file
@@ -355,7 +356,7 @@ public class OscopeView extends DriverFragment {
                                 return false;
                             updateProgressBar(20);
                             Utils.debugLine("first compile and program successful", true);
-                            if (!writeAscii(zipped_files, 0x7000, "switch_info")) return null;
+                            if (!writeAscii(zipped_files, 0x7000, "switch_info")) return false;
                             Utils.debugLine("first writeascii successful", true);
                             if (!compileAndProgram(zipped_files, "switch_program.elf", 70 * 1000))
                                 return false;
@@ -371,7 +372,7 @@ public class OscopeView extends DriverFragment {
                             } catch (InterruptedException e) {
                                 makeToastMessage("InterruptedException");
                                 Utils.debugLine(e.getMessage(), true);
-                                return null;
+                                return false;
                             }
                             //get the lines of the text file targetList
                             tp.TARGETLIST(dFile);
@@ -393,10 +394,10 @@ public class OscopeView extends DriverFragment {
                             updateProgressBar(70);
 
                             //finish programming the FPAA
-                            if (!writeAscii(zipped_files, 0x4300, "input_vector")) return null;
-                            if (!writeAscii(zipped_files, 0x4200, "output_info")) return null;
+                            if (!writeAscii(zipped_files, 0x4300, "input_vector")) return false;
+                            if (!writeAscii(zipped_files, 0x4200, "output_info")) return false;
                             if (!compileAndProgram(zipped_files, "voltage_meas.elf", 70 * 1000))
-                                return null;
+                                return false;
                             updateProgressBar(100);
 
                             // plot the switches
@@ -422,9 +423,9 @@ public class OscopeView extends DriverFragment {
 
                     @Override
                     protected void onPostExecute(Boolean result) {
-                        super.onPostExecute(result);
+                        //super.onPostExecute(result);
 
-                        if (result == null || !result) {
+                        if (!result) {
                             makeToastMessage("Error while trying to program the design");
                         }
 
@@ -435,7 +436,7 @@ public class OscopeView extends DriverFragment {
                         pauseButton.setEnabled(true);
                     }
                 }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }
+                }
         });
 
         /*----------------------------------------------------------------------------------*/

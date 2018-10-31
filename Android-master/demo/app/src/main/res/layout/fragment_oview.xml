@@ -8,83 +8,100 @@
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="wrap_content" android:gravity="center_horizontal">
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <ProgressBar
+            android:id="@+id/progress_bar"
             style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="601dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="100dp"
             android:layout_marginRight="100dp"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/progress_bar"
-            android:max="100"
             android:indeterminate="false"
+            android:max="100"
             android:progress="100" />
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:orientation="horizontal" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:gravity="center_horizontal">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Program\nDesign"
-                android:id="@+id/program_design_button" />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Get\nData"
-                android:id="@+id/get_data_button" />
-
-        </LinearLayout>
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:orientation="horizontal" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:gravity="center_horizontal">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Play"
-                android:id="@+id/play_button"
-                />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pause"
-                android:id="@+id/pause_button"
-                />
-
-        </LinearLayout>
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="23dp" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Sound Example"
             android:id="@+id/textView2"
-            android:layout_gravity="center_horizontal" />
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:text="Custom Design"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="601dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/program_design_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Program\nDesign" />
+
+            <Button
+                android:id="@+id/get_data_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Get\nData" />
+
+            <Button
+                android:id="@+id/play_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Play" />
+
+            <Button
+                android:id="@+id/pause_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Pause" />
+
+        </LinearLayout>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="423dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/zip_file_location"
+                android:layout_width="510dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:ems="10"
+                android:hint="Zip File Location"
+                android:inputType="text" />
+
+            <Button
+                android:id="@+id/zip_file_location_button"
+                style="@android:style/Widget.Material.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Read" />
+        </TableRow>
 
         <com.jjoe64.graphview.GraphView
-            android:layout_margin="10dp"
+            android:id="@+id/graph"
             android:layout_width="fill_parent"
-            android:layout_height="512dp"
-            android:id="@+id/graph"/>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:ems="10"
-            android:id="@+id/zip_file_location"
-            android:layout_gravity="center_horizontal"
-            android:hint="Zip File Location" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:text="Read"
-            android:id="@+id/zip_file_location_button"
-            android:layout_gravity="center_horizontal" />
+            android:layout_height="610dp"
+            android:layout_margin="10dp" />
 
     </LinearLayout>
 

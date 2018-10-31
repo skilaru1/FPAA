@@ -128,7 +128,7 @@ public class ControllerActivity extends AppCompatActivity
                 if (currentFragment instanceof HomeView) {
                     while (true) {
                         ((HomeView) currentFragment).update();
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
                     }
                 } else if (currentFragment instanceof DriverFragment) {
                     ((DriverFragment) currentFragment).onConnect();
