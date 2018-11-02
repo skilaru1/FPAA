@@ -41,7 +41,6 @@ public class ItemListAdapter extends ArrayAdapter {
             viewToUse = convertView;
             holder = (ViewHolder) viewToUse.getTag();
         }
-
         holder.titleText.setText(item.getTitle());
         holder.subtitleText.setText(item.getValue());
         return viewToUse;

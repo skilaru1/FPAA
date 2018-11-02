@@ -1,10 +1,13 @@
-<ListView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ListView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.AppCompat.Light.ListView.DropDown"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/background_dark"
+    android:cacheColorHint="@android:color/background_dark"
     android:choiceMode="singleChoice"
     android:divider="@android:color/transparent"
     android:dividerHeight="0dp"
-    android:background="#cccc"
+    android:entries="@array/section_titles"
+    android:textFilterEnabled="true"
     tools:context=".NavigationDrawerFragment" />

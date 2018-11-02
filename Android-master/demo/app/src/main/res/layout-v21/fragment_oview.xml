@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_gravity="center_horizontal"
-            android:text="@string/oscope_title"
+            android:text="Custom Design"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -43,7 +43,6 @@
 
             <Button
                 android:id="@+id/program_design_button"
-                style="@style/Widget.AppCompat.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Program\nDesign" />

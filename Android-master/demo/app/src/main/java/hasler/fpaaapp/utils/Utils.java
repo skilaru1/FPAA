@@ -294,11 +294,13 @@ public class Utils {
             byte[] buffer = new byte[1024];
             ZipEntry ze;
             Utils.debugLine("looping through entries", true);
-            while ((ze = zis.getNextEntry()) != null) {
+            ze = zis.getNextEntry();
+            while (ze!= null) {
                 // Cannot handle directories
                 if (ze.isDirectory()) {
                     Utils.debugLine("ze is directory", true);
                     Utils.debugLine(ze.getName(), true);
+                    ze = zis.getNextEntry();
                     continue;
                 }
 
@@ -318,9 +320,11 @@ public class Utils {
                 zis.closeEntry();
 
                 contents.put(name, data);
+                ze = zis.getNextEntry();
             }
 
             zis.close();
+
         } catch (IOException e) {
 
             Utils.debugLine("ioexception making getting zip map " + e.getMessage(), true);
