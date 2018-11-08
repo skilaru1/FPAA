@@ -1,0 +1,10 @@
+Progress:
+11/08/2018
+Edited compileAndProgram method to include a parameter for driver object
+- Seems unnecessary because driver is a public instance variable in the superclass of OscopeView, but method didn’t recognize it
+
+- programData within the driver class is throwing a ReadTimeOutException, not sure why yet
+	- Something to do with threads and AsyncTask is causing error
+	- First line of programData is int cpu_stat_check = Utils.toInt(readRegister("CPU_STAT")); -> calls ReadRegister -> calls read(int length) ->  calls read(int length, int n_millis) -> where error is occurring
+	 
+	- Figure out how threads work in Java to be able to solve this error
