@@ -381,8 +381,9 @@ public class Utils {
         }
 
         // Get format (32 bit or 64 bit)
-        int format;
-        switch (ident[4]) {
+        int format=0;
+
+        switch(ident[4]) {
             case 1:
                 format = 32;
                 break;
@@ -392,7 +393,6 @@ public class Utils {
             default:
                 throw new IOException("Invalid ELF class");
         }
-
         // Get endianess
         switch (ident[5]) {
             case 1:

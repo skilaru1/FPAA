@@ -352,13 +352,13 @@ public class OscopeView extends DriverFragment {
 
                             Utils.debugLine("\nstarted compile and program", true);
                             //begin programming FPAA
-                            if (!compileAndProgram(zipped_files, "tunnel_revtun_SWC_CAB.elf", 10 * 1000))
+                            if (!compileAndProgram(zipped_files, title+"/tunnel_revtun_SWC_CAB.elf", 10 * 1000, driver))
                                 return "tunnel_revtun_SWC_CAB.elf not properly programmed";
                             updateProgressBar(20);
                             Utils.debugLine("first compile and program successful", true);
                             if (!writeAscii(zipped_files, 0x7000, "switch_info")) return "first writeAscii failed";
                             Utils.debugLine("first writeascii successful", true);
-                            if (!compileAndProgram(zipped_files, "switch_program.elf", 70 * 1000))
+                            if (!compileAndProgram(zipped_files, title+"/switch_program.elf", 70 * 1000, driver))
                                 return "switch_program.elf not properly programmed";
                             updateProgressBar(30);
                             Utils.debugLine("started target program", true);
@@ -396,7 +396,7 @@ public class OscopeView extends DriverFragment {
                             //finish programming the FPAA
                             if (!writeAscii(zipped_files, 0x4300, "input_vector")) return "input_vector writeAscii failed";
                             if (!writeAscii(zipped_files, 0x4200, "output_info")) return "output_info writeAscii failed";
-                            if (!compileAndProgram(zipped_files, "voltage_meas.elf", 70 * 1000))
+                            if (!compileAndProgram(zipped_files, "voltage_meas.elf", 70 * 1000, driver))
                                 return "voltage_meas.elf not programmed";
                             updateProgressBar(100);
 
@@ -487,7 +487,7 @@ public class OscopeView extends DriverFragment {
                             } else {
                                 Utils.debugLine("voltage_meas.elf DNE", true);
                             }
-                            if (!compileAndProgram(zipped_files, "voltage_meas.elf", 20 * 1000)) {
+                            if (!compileAndProgram(zipped_files, "voltage_meas.elf", 20 * 1000, driver)) {
                                 Utils.debugLine("couldn't compile and program voltage_meas.elf", true);
                                 return "couldn't compile and program voltage_meas.elf";
                             }
@@ -702,7 +702,7 @@ public class OscopeView extends DriverFragment {
                         } else {
                             Utils.debugLine("voltage_meas.elf DNE", true);
                         }
-                    if (!compileAndProgram(zipped_files, "voltage_meas.elf", 20 * 1000)) {
+                    if (!compileAndProgram(zipped_files, "voltage_meas.elf", 20 * 1000, driver)) {
                         Utils.debugLine("couldn't compile and program voltage_meas.elf", true);
                         return "couldn't compile and program voltage_meas.elf";
                     }
@@ -891,9 +891,8 @@ public class OscopeView extends DriverFragment {
         Result: returns true when the instruction from elf file has been written to the FPAA
         ========================================================================================
         */
-        protected boolean compileAndProgram(Map<String, byte[]> loc, String name, int wait_ms) {
+        protected boolean compileAndProgram(Map<String, byte[]> loc, String name, int wait_ms, hasler.fpaaapp.utils.Driver driver) {
             byte[] data;
-
             if (!loc.containsKey(name.trim())) {
                 makeToastMessage("Zipped file does not contain file name \"" + name + "\"");
                 Utils.debugLine("Zipped file does not contain file name \"" + name + "\"",true);
@@ -902,16 +901,12 @@ public class OscopeView extends DriverFragment {
 
             try {
                 data = Utils.compileElf(loc.get(name));
-            } catch (Exception e) {
-                return false;
-            }
-
-            try {
                 driver.programData(data);
+            } catch (IOException e) {
+                makeToastMessage(e.getMessage());
             } catch (Exception e) {
-                return false;
+                makeToastMessage(e.getMessage());
             }
-
 
             return true;
         }
@@ -1134,18 +1129,18 @@ public class OscopeView extends DriverFragment {
                 }
                 if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_swc")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_swc")) return false;
-                if (!compileAndProgram(zipped_files, "recover_inject_aboveVt_SWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "recover_inject_aboveVt_SWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_swc")) return false;
-                if (!compileAndProgram(zipped_files, "first_coarse_program_aboveVt_SWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "first_coarse_program_aboveVt_SWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_swc")) return false;
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_aboveVt_SWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_aboveVt_SWC.elf", 20 * 1000, driver)) return false;
 
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_swc")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;
-                if (!compileAndProgram(zipped_files, "fine_program_aboveVt_m_ave_04_SWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "fine_program_aboveVt_m_ave_04_SWC.elf", 20 * 1000, driver)) return false;
             }
             //progressBar3.setProgress(10);
 
@@ -1153,17 +1148,17 @@ public class OscopeView extends DriverFragment {
                 Utils.debugLine("subVt_swc", true);
                 if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_swc")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_swc")) return false;
-                if (!compileAndProgram(zipped_files,"recover_inject_subVt_SWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files,"recover_inject_subVt_SWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_swc")) return false;
-                if (!compileAndProgram(zipped_files, "first_coarse_program_subVt_SWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "first_coarse_program_subVt_SWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_swc")) return false;
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_subVt_SWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_subVt_SWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_swc")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;
-                if (!compileAndProgram(zipped_files, "fine_program_subVt_m_ave_04_SWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "fine_program_subVt_m_ave_04_SWC.elf", 20 * 1000, driver)) return false;
             }
             //progressBar3.setProgress(15);
 
@@ -1172,17 +1167,17 @@ public class OscopeView extends DriverFragment {
                 Utils.debugLine("lowsubVt_swc", true);
                 if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_swc")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_lowsubVt_swc")) return false;
-                if (!compileAndProgram(zipped_files,"recover_inject_lowsubVt_SWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files,"recover_inject_lowsubVt_SWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_swc")) return false;
-                if (!compileAndProgram(zipped_files, "first_coarse_program_lowsubVt_SWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "first_coarse_program_lowsubVt_SWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_swc")) return false;
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_lowsubVt_SWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_lowsubVt_SWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_swc")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;
-                if (!compileAndProgram(zipped_files, "fine_program_lowsubVt_m_ave_04_SWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "fine_program_lowsubVt_m_ave_04_SWC.elf", 20 * 1000, driver)) return false;
             }
             //progressBar3.setProgress(20);
 /*--------------------------HIGHABOVEVT_NOT_YET_IMPLEMENTED-------------------*/
@@ -1208,17 +1203,17 @@ public class OscopeView extends DriverFragment {
                 Utils.debugLine("aboveVt_ota", true);
                 if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_ota" )) return false;
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_ota")) return false;
-                if (!compileAndProgram(zipped_files, "recover_inject_aboveVt_CAB_ota.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "recover_inject_aboveVt_CAB_ota.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_ota")) return false;
-                if (!compileAndProgram(zipped_files, "first_coarse_program_aboveVt_CAB_ota.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "first_coarse_program_aboveVt_CAB_ota.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_ota")) return false;
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_aboveVt_CAB_ota.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_aboveVt_CAB_ota.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_ota")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;
-                if (!compileAndProgram(zipped_files,"fine_program_aboveVt_m_ave_04_CAB_ota.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files,"fine_program_aboveVt_m_ave_04_CAB_ota.elf", 20 * 1000, driver)) return false;
             }
             //progressBar3.setProgress(30);
 
@@ -1226,17 +1221,17 @@ public class OscopeView extends DriverFragment {
                 Utils.debugLine("subVt_ota", true);
                 if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_ota" )) return false;
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_ota")) return false;
-                if (!compileAndProgram(zipped_files, "recover_inject_subVt_CAB_ota.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "recover_inject_subVt_CAB_ota.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_ota")) return false;
-                if (!compileAndProgram(zipped_files, "first_coarse_program_subVt_CAB_ota.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "first_coarse_program_subVt_CAB_ota.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_ota")) return false;
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_subVt_CAB_ota.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_subVt_CAB_ota.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_ota")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;
-                if (!compileAndProgram(zipped_files,"fine_program_subVt_m_ave_04_CAB_ota.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files,"fine_program_subVt_m_ave_04_CAB_ota.elf", 20 * 1000, driver)) return false;
             }
             //progressBar3.setProgress(35);
 
@@ -1244,17 +1239,17 @@ public class OscopeView extends DriverFragment {
                 Utils.debugLine("lowsubVt_ota", true);
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_ota" )) return false;
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_lowsubVt_ota")) return false;
-                if (!compileAndProgram(zipped_files, "recover_inject_lowsubVt_CAB_ota.elf",20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "recover_inject_lowsubVt_CAB_ota.elf",20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_ota")) return false;
-                if (!compileAndProgram(zipped_files, "first_coarse_program_lowsubVt_CAB_ota.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "first_coarse_program_lowsubVt_CAB_ota.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_ota")) return false;
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_lowsubVt_CAB_ota.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_lowsubVt_CAB_ota.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_ota")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;
-                if (!compileAndProgram(zipped_files,"fine_program_lowsubVt_m_ave_04_CAB_ota.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files,"fine_program_lowsubVt_m_ave_04_CAB_ota.elf", 20 * 1000, driver)) return false;
             }
             //progressBar3.setProgress(40);
 
@@ -1262,17 +1257,17 @@ public class OscopeView extends DriverFragment {
                 Utils.debugLine("aboveVt_otaref", true);
                 if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_otaref" )) return false;
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_otaref")) return false;
-                if (!compileAndProgram(zipped_files, "recover_inject_aboveVt_CAB_ota_ref.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "recover_inject_aboveVt_CAB_ota_ref.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_otaref")) return false;
-                if (!compileAndProgram(zipped_files, "first_coarse_program_aboveVt_CAB_ota_ref.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "first_coarse_program_aboveVt_CAB_ota_ref.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_otaref")) return false;
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_aboveVt_CAB_ota_ref.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_aboveVt_CAB_ota_ref.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_otaref")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;
-                if (!compileAndProgram(zipped_files,"fine_program_aboveVt_m_ave_04_CAB_ota_ref.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files,"fine_program_aboveVt_m_ave_04_CAB_ota_ref.elf", 20 * 1000, driver)) return false;
             }
             //progressBar3.setProgress(45);
 
@@ -1280,17 +1275,17 @@ public class OscopeView extends DriverFragment {
                 Utils.debugLine("subVt_otaref", true);
                 if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_otaref" )) return false;
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_otaref")) return false;
-                if (!compileAndProgram(zipped_files, "recover_inject_subVt_CAB_ota_ref.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "recover_inject_subVt_CAB_ota_ref.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_otaref")) return false;
-                if (!compileAndProgram(zipped_files, "first_coarse_program_subVt_CAB_ota_ref.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "first_coarse_program_subVt_CAB_ota_ref.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_otaref")) return false;
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_subVt_CAB_ota_ref.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_subVt_CAB_ota_ref.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_otaref")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;
-                if (!compileAndProgram(zipped_files,"fine_program_subVt_m_ave_04_CAB_ota_ref.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files,"fine_program_subVt_m_ave_04_CAB_ota_ref.elf", 20 * 1000, driver)) return false;
             }
             //progressBar3.setProgress(50);
 
@@ -1298,17 +1293,17 @@ public class OscopeView extends DriverFragment {
                 Utils.debugLine("lowsubVt_otaref", true);
                 if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_otaref")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_lowsubVt_otaref")) return false;
-                if (!compileAndProgram(zipped_files, "recover_inject_lowsubVt_CAB_ota_ref.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "recover_inject_lowsubVt_CAB_ota_ref.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_otaref")) return false;
-                if (!compileAndProgram(zipped_files, "first_coarse_program_lowsubVt_CAB_ota_ref.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "first_coarse_program_lowsubVt_CAB_ota_ref.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_otaref")) return false;
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_lowsubVt_CAB_ota_ref.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_lowsubVt_CAB_ota_ref.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_otaref")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;
-                if (!compileAndProgram(zipped_files, "fine_program_lowsubVt_m_ave_04_CAB_ota_ref.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "fine_program_lowsubVt_m_ave_04_CAB_ota_ref.elf", 20 * 1000, driver)) return false;
             }
             //progressBar3.setProgress(55);
 
@@ -1318,17 +1313,17 @@ public class OscopeView extends DriverFragment {
                 //Utils.debugLine("1",true);
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_mite")) return false;//line 28
                 //Utils.debugLine("2",true);
-                if (!compileAndProgram(zipped_files, "recover_inject_aboveVt_CAB_mite.elf", 20 * 1000)) return false;//line 29
+                if (!compileAndProgram(zipped_files, "recover_inject_aboveVt_CAB_mite.elf", 20 * 1000, driver)) return false;//line 29
                 //Utils.debugLine("3",true);
 
                 // coarse inj
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_mite")) return false; //line 32
                 //Utils.debugLine("4",true);
-                if (!compileAndProgram(zipped_files, "first_coarse_program_aboveVt_CAB_mite.elf", 20 * 1000)) return false;//line 33
+                if (!compileAndProgram(zipped_files, "first_coarse_program_aboveVt_CAB_mite.elf", 20 * 1000, driver)) return false;//line 33
                 //Utils.debugLine("5",true);
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_mite")) return false;//line 36
                 //Utils.debugLine("6",true);
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_aboveVt_CAB_mite.elf", 20 * 1000)) return false;//line 37
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_aboveVt_CAB_mite.elf", 20 * 1000, driver)) return false;//line 37
                 //Utils.debugLine("7",true);
 
                 // fine inj
@@ -1336,7 +1331,7 @@ public class OscopeView extends DriverFragment {
                 //Utils.debugLine("8",true);
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;//line 40
                 //Utils.debugLine("9",true);
-                if (!compileAndProgram(zipped_files, "fine_program_aboveVt_m_ave_04_CAB_mite.elf", 20 * 1000)) return false;//line 41
+                if (!compileAndProgram(zipped_files, "fine_program_aboveVt_m_ave_04_CAB_mite.elf", 20 * 1000, driver)) return false;//line 41
                 //Utils.debugLine("10",true);
             }
             //progressBar3.setProgress(60);
@@ -1345,17 +1340,17 @@ public class OscopeView extends DriverFragment {
                 Utils.debugLine("n_target_subVt_mite", true);
                 if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_mite")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_mite")) return false;
-                if (!compileAndProgram(zipped_files, "recover_inject_subVt_CAB_mite.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "recover_inject_subVt_CAB_mite.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_mite")) return false;
-                if (!compileAndProgram(zipped_files, "first_coarse_program_subVt_CAB_mite.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "first_coarse_program_subVt_CAB_mite.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_mite")) return false;
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_subVt_CAB_mite.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_subVt_CAB_mite.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_mite")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;
-                if (!compileAndProgram(zipped_files, "fine_program_subVt_m_ave_04_CAB_mite.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "fine_program_subVt_m_ave_04_CAB_mite.elf", 20 * 1000, driver)) return false;
             }
             //progressBar3.setProgress(65);
 
@@ -1363,17 +1358,17 @@ public class OscopeView extends DriverFragment {
                 Utils.debugLine("n_target_lowsubVt_mite", true);
                 if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_mite")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_lowsubVt_mite")) return false;
-                if (!compileAndProgram(zipped_files, "recover_inject_lowsubVt_CAB_mite.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "recover_inject_lowsubVt_CAB_mite.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_mite")) return false;
-                if (!compileAndProgram(zipped_files, "first_coarse_program_lowsubVt_CAB_mite.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "first_coarse_program_lowsubVt_CAB_mite.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_mite")) return false;
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_lowsubVt_CAB_mite.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_lowsubVt_CAB_mite.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_mite")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;
-                if (!compileAndProgram(zipped_files, "fine_program_lowsubVt_m_ave_04_CAB_mite.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "fine_program_lowsubVt_m_ave_04_CAB_mite.elf", 20 * 1000, driver)) return false;
             }
             //progressBar3.setProgress(70);
 
@@ -1381,17 +1376,17 @@ public class OscopeView extends DriverFragment {
                 Utils.debugLine("n_target_aboveVt_dirswc", true);
                 if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_dirswc")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_dirswc")) return false;
-                if (!compileAndProgram(zipped_files, "recover_inject_aboveVt_DIRSWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "recover_inject_aboveVt_DIRSWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_dirswc")) return false;
-                if (!compileAndProgram(zipped_files, "first_coarse_program_aboveVt_DIRSWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "first_coarse_program_aboveVt_DIRSWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_dirswc")) return false;
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_aboveVt_DIRSWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_aboveVt_DIRSWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_aboveVt_dirswc")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;
-                if (!compileAndProgram(zipped_files, "fine_program_aboveVt_m_ave_04_DIRSWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "fine_program_aboveVt_m_ave_04_DIRSWC.elf", 20 * 1000, driver)) return false;
             }
             //progressBar3.setProgress(75);
 
@@ -1399,17 +1394,17 @@ public class OscopeView extends DriverFragment {
                 Utils.debugLine("n_target_subVt_dirswc", true);
                 if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_dirswc")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_dirswc")) return false;
-                if (!compileAndProgram(zipped_files, "recover_inject_subVt_DIRSWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "recover_inject_subVt_DIRSWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_dirswc")) return false;
-                if (!compileAndProgram(zipped_files, "first_coarse_program_subVt_DIRSWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "first_coarse_program_subVt_DIRSWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_dirswc")) return false;
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_subVt_DIRSWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_subVt_DIRSWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_subVt_dirswc")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;
-                if (!compileAndProgram(zipped_files, "fine_program_subVt_m_ave_04_DIRSWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "fine_program_subVt_m_ave_04_DIRSWC.elf", 20 * 1000, driver)) return false;
             }
             //progressBar3.setProgress(80);
 
@@ -1417,17 +1412,17 @@ public class OscopeView extends DriverFragment {
                 Utils.debugLine("n_target_lowsubVt_dirswc", true);
                 if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_dirswc")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "pulse_width_table_lowsubVt_dirswc")) return false;
-                if (!compileAndProgram(zipped_files, "recover_inject_lowsubVt_DIRSWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "recover_inject_lowsubVt_DIRSWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_dirswc")) return false;
-                if (!compileAndProgram(zipped_files, "first_coarse_program_lowsubVt_DIRSWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "first_coarse_program_lowsubVt_DIRSWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_dirswc")) return false;
-                if (!compileAndProgram(zipped_files, "measured_coarse_program_lowsubVt_DIRSWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "measured_coarse_program_lowsubVt_DIRSWC.elf", 20 * 1000, driver)) return false;
 
                 //if (!writeAscii(zipped_files, 0x7000, "target_info_lowsubVt_dirswc")) return false;
                 if (!writeAscii(zipped_files, 0x6800, "Vd_table_30mV")) return false;
-                if (!compileAndProgram(zipped_files, "fine_program_lowsubVt_m_ave_04_DIRSWC.elf", 20 * 1000)) return false;
+                if (!compileAndProgram(zipped_files, "fine_program_lowsubVt_m_ave_04_DIRSWC.elf", 20 * 1000, driver)) return false;
             }
             //progressBar3.setProgress(100);
             return true;
