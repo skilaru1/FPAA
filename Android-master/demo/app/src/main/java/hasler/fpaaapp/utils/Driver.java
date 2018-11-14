@@ -179,6 +179,7 @@ public class Driver extends GenericDriver {
     protected ReadThread thread;
 
     protected byte[] read(int length, int n_millis) throws ReadTimeOutException {
+        String threadStatus;
         readAmount = 0;
         readLength = length;
         data = new byte[readLength];
@@ -186,13 +187,13 @@ public class Driver extends GenericDriver {
 
         if (thread == null || thread.isCancelled()) {
             thread = new ReadThread();
-            thread.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            thread.execute();//executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
         // wait for the thread to complete
         long startTime = System.currentTimeMillis();
         while (!readComplete) {
-            if (System.currentTimeMillis() - startTime > n_millis) { // cancel after 5 seconds
+            if (false){//System.currentTimeMillis() - startTime > n_millis) { // cancel after 5 seconds
                 Log.d(TAG, "Read Thread Error");
                 thread.cancel(false);
                 thread = null;
@@ -205,6 +206,8 @@ public class Driver extends GenericDriver {
             }
             try {
                 Thread.sleep(5);
+                threadStatus = thread.getStatus().toString();
+                Utils.debugLine(threadStatus, true);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -227,6 +230,7 @@ public class Driver extends GenericDriver {
     private class ReadThread extends AsyncTask<Void, Integer, Void> {
         @Override
         protected Void doInBackground(Void... params) {
+            android.os.Debug.waitForDebugger();
             final int BUFFER_LENGTH = 70000;
             byte[] buf = new byte[BUFFER_LENGTH];
 
