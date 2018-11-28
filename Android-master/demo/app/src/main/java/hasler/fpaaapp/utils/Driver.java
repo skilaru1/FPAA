@@ -244,10 +244,7 @@ public class Driver extends GenericDriver {
                     }
                 }
 
-                while (readAmount < readLength) {
-                    if (isCancelled()) {
-                        break;
-                    }
+                while (readAmount < readLength && !isCancelled()) {
 
                     avail = ftDev.getQueueStatus();
                     if (avail > 0) {

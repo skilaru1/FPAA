@@ -73,6 +73,7 @@ public class HomeView extends Fragment {
 
     public void update() {
         int deviceCount = d2xxManager.createDeviceInfoList(getActivity());
+        D2xxManager.FtDeviceInfoListNode abc = d2xxManager.getDeviceInfoListDetail(1);
         n_devices.setValue(deviceCount);
 
         if (deviceCount > 0) {

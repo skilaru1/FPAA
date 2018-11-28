@@ -5,7 +5,7 @@ Edited compileAndProgram method to include a parameter for driver object
 
 - programData within the driver class is throwing a ReadTimeOutException, not sure why yet
 	- Something to do with threads and AsyncTask is causing error
-	- First line of programData is int cpu_stat_check = Utils.toInt(readRegister("CPU_STAT")); -> calls ReadRegister -> calls read(int length) ->  calls read(int length, int n_millis) -> ReadThread AsyncTask ->where error is occurring
+	- First line of programData is int cpu_stat_check = Utils.toInt(readRegister("CPU_STAT")); -> calls ReadRegister in GenericDriver -> calls read(int length) ->  calls read(int length, int n_millis) -> ReadThread AsyncTask ->where error is occurring
 	 
 	- Figure out how threads work in Java to be able to solve this error
 
